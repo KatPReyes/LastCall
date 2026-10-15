@@ -128,3 +128,22 @@ main > section#home:not(:has(~ section:target)) {
     border-radius: 10px;
     margin-top: 25px;
 }
+
+.budget-setup input {
+    background-color: #181719;
+    color: #f5f0f0;
+    border: 1px solid #62313d;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#save-budget {
+    background-color: #62313d;
+    color: #f5f0f0;
+    border: none;
+    padding: 10px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
