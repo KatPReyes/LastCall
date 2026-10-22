@@ -1,6 +1,7 @@
 const budgetInput = document.getElementById("monthly-budget");
 const saveButton = document.getElementById("save-budget");
 const budgetDisplay = document.getElementById("budget-display");
+const remainingBudgetDisplay = document.getElementById("remaining-budget");
 const categoryName = document.getElementById("category-name");
 const categoryAmount = document.getElementById("category-amount");
 const addCategoryButton = document.getElementById("add-category");
@@ -46,8 +47,9 @@ const formattedAmount = category.amount.toLocaleString("en-US", {
 
         savedCategory.firstChild.textContent = category.name + ": " + formattedUpdatedAmount;
 
-    });
-    
+        updateRemainingBudgetDisplay();
+        });
+
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
 
@@ -61,10 +63,40 @@ const formattedAmount = category.amount.toLocaleString("en-US", {
         });
 
         localStorage.setItem("categories", JSON.stringify(categories));
-    });
+
+        updateRemainingBudgetDisplay();
+        });
 
     categoryList.appendChild(savedCategory);
 }
+function calculateCategoryTotal() {
+    let total = 0;
+
+    categories.forEach(function(category) {
+        total += category.amount;
+    });
+
+    return total;
+}
+function calculateRemainingBudget() {
+    const monthlyBudget = Number(localStorage.getItem("monthlyBudget")) || 0;
+
+    const totalAllocated = calculateCategoryTotal();
+
+    return monthlyBudget - totalAllocated;
+}
+function updateRemainingBudgetDisplay() {
+    const remainingBudget = calculateRemainingBudget();
+
+    const formattedRemainingBudget = remainingBudget.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+    });
+
+    remainingBudgetDisplay.textContent = "Remaining to Allocate: " + formattedRemainingBudget;
+}
+
+updateRemainingBudgetDisplay();
 
 categories.forEach(function(category) {
     displayCategory(category);
@@ -94,6 +126,8 @@ saveButton.addEventListener("click", function() {
 
     localStorage.setItem("monthlyBudget", amount);
     budgetDisplay.textContent = "Monthly Budget: " + formattedAmount;
+
+    updateRemainingBudgetDisplay();
 });
 
 addCategoryButton.addEventListener("click", function() {
@@ -115,4 +149,6 @@ addCategoryButton.addEventListener("click", function() {
     localStorage.setItem("categories", JSON.stringify(categories));
 
     displayCategory(newCategoryData);
+
+    updateRemainingBudgetDisplay();
 });
