@@ -8,8 +8,8 @@ const categoryList = document.getElementById("category-list");
 
 let categories = JSON.parse(localStorage.getItem("categories")) || [];
 
-categories.forEach(function(category) {
-    const formattedAmount = category.amount.toLocaleString("en-US", {
+function displayCategory(category) {
+const formattedAmount = category.amount.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
     });
@@ -18,7 +18,56 @@ categories.forEach(function(category) {
 
     savedCategory.textContent = category.name + ": " + formattedAmount;
 
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+
+    savedCategory.appendChild(editButton);
+
+    editButton.addEventListener("click", function() {
+        const updatedName = prompt("Enter new category name:", category.name);
+        if (updatedName === null || updatedName.trim() === "") {
+        return;
+        }
+
+        const updatedAmount = prompt("Enter new category amount:", category.amount);
+        if (updatedAmount === null || updatedAmount.trim() === "" || Number(updatedAmount) <= 0) {
+            return;
+        }
+
+        category.name = updatedName.trim();
+        category.amount = Number(updatedAmount);
+
+        localStorage.setItem("categories", JSON.stringify(categories));
+
+        const formattedUpdatedAmount = category.amount.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+        });
+
+        savedCategory.firstChild.textContent = category.name + ": " + formattedUpdatedAmount;
+
+    });
+    
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+
+    savedCategory.appendChild(deleteButton);
+
+    deleteButton.addEventListener("click", function() {
+        savedCategory.remove();
+
+        categories = categories.filter(function(item) {
+            return item !== category;
+        });
+
+        localStorage.setItem("categories", JSON.stringify(categories));
+    });
+
     categoryList.appendChild(savedCategory);
+}
+
+categories.forEach(function(category) {
+    displayCategory(category);
 });
 
 const savedBudget = localStorage.getItem("monthlyBudget");
@@ -65,14 +114,5 @@ addCategoryButton.addEventListener("click", function() {
 
     localStorage.setItem("categories", JSON.stringify(categories));
 
-    const formattedAmount = amount.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-    });
-
-    const newCategory = document.createElement("p");
-
-    newCategory.textContent = name + ": " + formattedAmount;
-
-    categoryList.appendChild(newCategory);
+    displayCategory(newCategoryData);
 });
